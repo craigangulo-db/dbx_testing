@@ -1,5 +1,5 @@
-# variables:
-# - group: Databricks-environment
+variables:
+- group: Databricks-environment
 
 
 trigger:
@@ -64,53 +64,53 @@ stages:
         testResultsFiles: '**/test-*.xml'
         failTaskOnFailedTests: true
 
-# - stage: onRelease
-#   condition: |
-#     or(
-#       startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'),
-#       startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
-#     )
-#   jobs:
-#   - job: onReleaseJob
-#     pool:
-#       vmImage: 'ubuntu-18.04'
+- stage: onRelease
+  condition: |
+    or(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags/v')
+    )
+  jobs:
+  - job: onReleaseJob
+    pool:
+      vmImage: 'ubuntu-18.04'
 
-#     steps:
-#       - script: env | sort
-#         displayName: 'Environment / Context'
+    steps:
+      - script: env | sort
+        displayName: 'Environment / Context'
 
-#       - task: UsePythonVersion@0
-#         displayName: 'Use Python 3.7'
-#         inputs:
-#           versionSpec: 3.7
+      - task: UsePythonVersion@0
+        displayName: 'Use Python 3.7'
+        inputs:
+          versionSpec: 3.7
 
-#       - checkout: self
-#         persistCredentials: true
-#         clean: true
-#         displayName: 'Checkout & Build.Reason: $(Build.Reason) & Build.SourceBranchName: $(Build.SourceBranchName)'
+      - checkout: self
+        persistCredentials: true
+        clean: true
+        displayName: 'Checkout & Build.Reason: $(Build.Reason) & Build.SourceBranchName: $(Build.SourceBranchName)'
 
-#       - script: |
-#           python -m pip install --upgrade pip
-#           pip install -r unit-requirements.txt
-#           pip install -e .
-#         displayName: 'Install dependencies'
+      - script: |
+          python -m pip install --upgrade pip
+          pip install -r unit-requirements.txt
+          pip install -e .
+        displayName: 'Install dependencies'
 
-#       - script: |
-#           echo "[DEFAULT]" > ~/.databrickscfg
-#           echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
-#           echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
+      - script: |
+          echo "[DEFAULT]" > ~/.databrickscfg
+          echo "host = $DATABRICKS_HOST" >> ~/.databrickscfg
+          echo "token = $DATABRICKS_TOKEN" >> ~/.databrickscfg
 
-#       - script: |
-#           pytest tests/unit --junitxml=test-unit.xml
-#         displayName: 'Run Unit tests'
+      - script: |
+          pytest tests/unit --junitxml=test-unit.xml
+        displayName: 'Run Unit tests'
 
-#       - script: |
-#           dbx deploy --jobs=dbx_testing-sample
-#         displayName: 'Deploy the job'
+      - script: |
+          dbx deploy --jobs=dbx_testing-sample
+        displayName: 'Deploy the job'
 
-#       - task: PublishTestResults@2
-#         condition: succeededOrFailed()
-#         inputs:
-#           testResultsFormat: 'JUnit'
-#           testResultsFiles: '**/test-*.xml'
-#           failTaskOnFailedTests: true
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFormat: 'JUnit'
+          testResultsFiles: '**/test-*.xml'
+          failTaskOnFailedTests: true
