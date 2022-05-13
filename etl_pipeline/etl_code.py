@@ -1,6 +1,6 @@
 # Databricks notebook source
 print('commit to release branch')
-print('test 2')
+print('test 3, updated path')
 
 # COMMAND ----------
 
