@@ -15,6 +15,11 @@ trigger:
 
 stages:
 - stage: onPush
+  condition: |
+    and(
+      ne(variables['Build.SourceBranch'], 'refs/heads/releases'),
+      not(startsWith(variables['Build.SourceBranch'], 'refs/tags/v'))
+    )
   jobs:
   - job: onPushJob
     pool:
